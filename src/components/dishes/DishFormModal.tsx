@@ -64,7 +64,7 @@ export function DishFormModal({
 			{/* biome-ignore lint/a11y/noStaticElementInteractions: stop propagation */}
 			{/* biome-ignore lint/a11y/useKeyWithClickEvents: stop propagation */}
 			<div
-				className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+				className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
 				onClick={(e) => e.stopPropagation()}
 			>
 				<div className="mb-4 flex items-center justify-between">
@@ -98,7 +98,7 @@ export function DishFormModal({
 						/>
 					</div>
 
-					<div className="grid grid-cols-2 gap-4">
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<div>
 							<label
 								htmlFor="dish-category"

@@ -79,7 +79,7 @@ function Dashboard() {
 				<button
 					type="button"
 					onClick={() => setModalOpen(true)}
-					className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+					className="flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 sm:w-auto"
 				>
 					<Plus className="size-4" />
 					Nuevo pedido

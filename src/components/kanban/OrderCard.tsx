@@ -83,7 +83,7 @@ export function OrderCard({
 				</span>
 			</div>
 
-			<div className="mt-3 flex items-center justify-between opacity-0 transition-opacity group-hover:opacity-100">
+			<div className="mt-3 flex items-center justify-between opacity-100 transition-opacity lg:opacity-0 lg:group-hover:opacity-100">
 				<button
 					type="button"
 					onClick={() => onMove(order._id, "pending")}

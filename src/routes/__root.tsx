@@ -1,6 +1,8 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { Menu, UtensilsCrossed } from "lucide-react";
+import { useState } from "react";
 import { Sidebar } from "../components/layout/Sidebar";
 import ConvexProvider from "../integrations/convex/provider";
 
@@ -17,7 +19,7 @@ export const Route = createRootRoute({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "TanStack Start Starter",
+				title: "Sabor Real · CRM Restaurante",
 			},
 		],
 		links: [
@@ -31,16 +33,39 @@ export const Route = createRootRoute({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const [mobileOpen, setMobileOpen] = useState(false);
+
 	return (
-		<html lang="en">
+		<html lang="es">
 			<head>
 				<HeadContent />
 			</head>
 			<body>
 				<ConvexProvider>
 					<div className="flex min-h-screen">
-						<Sidebar />
-						<main className="flex-1 bg-slate-50">{children}</main>
+						<Sidebar
+							mobileOpen={mobileOpen}
+							onMobileClose={() => setMobileOpen(false)}
+						/>
+						<div className="flex min-w-0 flex-1 flex-col bg-slate-50">
+							<header className="sticky top-0 z-30 flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
+								<button
+									type="button"
+									onClick={() => setMobileOpen(true)}
+									className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"
+									aria-label="Abrir menú"
+								>
+									<Menu className="size-5" />
+								</button>
+								<div className="flex items-center gap-2">
+									<div className="flex size-8 items-center justify-center rounded-lg bg-amber-500 text-slate-900">
+										<UtensilsCrossed className="size-4" />
+									</div>
+									<p className="text-sm font-bold text-slate-900">Sabor Real</p>
+								</div>
+							</header>
+							<main className="flex-1">{children}</main>
+						</div>
 					</div>
 					<TanStackDevtools
 						config={{

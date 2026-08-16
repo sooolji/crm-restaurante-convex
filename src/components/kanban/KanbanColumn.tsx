@@ -48,7 +48,7 @@ export function KanbanColumn({
 			onDragOver={onDragOver}
 			onDragEnter={onDragEnter}
 			onDragLeave={onDragLeave}
-			className={`flex min-h-[70vh] flex-1 shrink-0 flex-col rounded-2xl p-3 transition-colors ${COLUMN_STYLES[status]} ${
+			className={`flex min-h-[50vh] min-w-72 flex-1 flex-col rounded-2xl p-3 transition-colors sm:min-h-[65vh] lg:min-h-[70vh] ${COLUMN_STYLES[status]} ${
 				isOver ? "ring-2 ring-indigo-400" : ""
 			}`}
 		>

@@ -91,7 +91,7 @@ export function OrderFormModal({ open, onClose, onSave }: OrderFormModalProps) {
 				</div>
 
 				<form onSubmit={submit} className="space-y-4">
-					<div className="grid grid-cols-2 gap-4">
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<div>
 							<label
 								htmlFor="order-table"
@@ -144,14 +144,17 @@ export function OrderFormModal({ open, onClose, onSave }: OrderFormModalProps) {
 						</div>
 						<div className="space-y-2">
 							{items.map((item) => (
-								<div key={item.id} className="flex items-center gap-2">
+								<div
+									key={item.id}
+									className="flex flex-wrap items-center gap-2"
+								>
 									<input
 										value={item.name}
 										onChange={(e) =>
 											updateItem(item.id, { name: e.target.value })
 										}
 										placeholder="Nombre del plato"
-										className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+										className="min-w-40 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
 									/>
 									<input
 										type="number"
