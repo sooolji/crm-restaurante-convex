@@ -1,214 +1,97 @@
-Welcome to your new TanStack Start app!
+# Sabor Real · CRM de Restaurante
 
-# Getting Started
+CRM para gestionar pedidos y el catálogo de platos de un restaurante, con actualizaciones en tiempo real. Frontend en **TanStack Start + React 19 + Tailwind CSS v4** y backend en **Convex** (base de datos, funciones y sincronización reactiva).
 
-To run this application:
+## Funcionalidades
 
-```bash
-bun install
-bun --bun run dev
+- **Kanban de pedidos** (`/`): columnas Pendiente → En preparación → Listo → Entregado, drag & drop entre columnas, prioridades, notas, totales y estadísticas en vivo.
+- **Administración de platos** (`/platos`): catálogo con búsqueda y filtro por categoría, crear/editar/eliminar platos y toggle de disponibilidad.
+- **Tiempo real**: todos los cambios se reflejan al instante entre clientes vía Convex.
+- **Responsive**: drawer de navegación en móvil, kanban con scroll horizontal y modales adaptados.
+
+## Stack
+
+- [TanStack Start](https://tanstack.com/start) + [TanStack Router](https://tanstack.com/router) (file-based routing)
+- [Convex](https://convex.dev) — base de datos reactiva, queries/mutations y seed
+- [Tailwind CSS v4](https://tailwindcss.com/), [lucide-react](https://lucide.dev/) y [Biome](https://biomejs.dev/)
+
+## Estructura
+
+```
+convex/               # Backend Convex
+  schema.ts           # Tablas: orders y dishes (con índices)
+  orders.ts           # list / create / updateStatus / remove
+  dishes.ts           # list / create / update / toggleAvailable / remove
+  seed.ts             # Seed idempotente de datos de ejemplo
+src/
+  routes/             # / (kanban) y /platos (catálogo)
+  components/
+    kanban/           # Board, Column, OrderCard, OrderFormModal
+    dishes/           # DishCard, DishFormModal
+    layout/           # Sidebar (drawer en móvil)
+  lib/mock-data.ts    # Constantes y tipos de payload
 ```
 
-# Building For Production
+## Puesta en marcha
 
-To build this application for production:
+1. Instalar dependencias:
+
+   ```bash
+   bun install
+   ```
+
+2. Configurar variables de entorno en `.env.local` (desde el dashboard de Convex):
+
+   ```bash
+   CONVEX_DEPLOYMENT=tu-deployment
+   VITE_CONVEX_URL=https://tu-deployment.convex.cloud
+   ```
+
+3. Levantar el backend Convex (pushea el esquema y las funciones):
+
+   ```bash
+   npx convex dev
+   ```
+
+4. Ejecutar el seed (idempotente, se puede re-ejecutar):
+
+   ```bash
+   npx convex run seed:seed
+   ```
+
+5. Levantar el frontend:
+
+   ```bash
+   bun --bun run dev
+   ```
+
+   La app queda en http://localhost:3000.
+
+## Scripts
+
+```bash
+bun --bun run dev        # Servidor de desarrollo (Vite)
+bun --bun run build      # Build de producción
+bun --bun run preview    # Preview del build
+bun --bun run check      # Biome (lint + formato)
+bun --bun run lint       # Biome lint
+bun --bun run format     # Biome format
+```
+
+## Build de producción
+
+El proyecto usa Nitro como adaptador de servidor; el build genera un servidor Node autocontenido:
 
 ```bash
 bun --bun run build
-```
-
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Remove `@tailwindcss/vite` and `tailwindcss` from `package.json`
-
-## Linting & Formatting
-
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
-
-
-```bash
-bun --bun run lint
-bun --bun run format
-bun --bun run check
-```
-
-
-## Deploy with Nitro
-
-This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
-
-```bash
-npm run build
 node dist/server/index.mjs
 ```
 
-The build output is a self-contained Node server. To deploy, push the `dist/` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
+Para hosts específicos (Vercel, Netlify, Cloudflare, etc.) ver https://v3.nitro.build/deploy.
 
-For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tuning, see https://v3.nitro.build/deploy.
+## Convex
 
-
-## Setting up Convex
-
-- Set the `VITE_CONVEX_URL` and `CONVEX_DEPLOYMENT` environment variables in your `.env.local`. (Or run `bunx --bun convex init` to set them automatically.)
-- Run `bunx --bun convex dev` to start the Convex server.
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+- **Desplegar a producción**: `npx convex deploy`
+- **Re-seed**: `npx convex run seed:seed` (borra e inserta los datos de ejemplo)
+- **Dashboard**: https://dashboard.convex.dev
+- Tipos: los tipos generados en `convex/_generated/` se actualizan automáticamente con `npx convex dev`.
