@@ -1,15 +1,16 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { DISH_CATEGORIES, type Dish } from "../../lib/mock-data";
+import type { Doc } from "../../../convex/_generated/dataModel";
+import { DISH_CATEGORIES, type DishPayload } from "../../lib/mock-data";
 
 interface DishFormModalProps {
 	open: boolean;
-	dish: Dish | null;
+	dish: Doc<"dishes"> | null;
 	onClose: () => void;
-	onSave: (dish: Dish) => void;
+	onSave: (dish: DishPayload) => void;
 }
 
-const EMPTY: Omit<Dish, "id"> = {
+const EMPTY: DishPayload = {
 	name: "",
 	category: DISH_CATEGORIES[0],
 	price: 0,
@@ -24,17 +25,28 @@ export function DishFormModal({
 	onClose,
 	onSave,
 }: DishFormModalProps) {
-	const [form, setForm] = useState<Dish>({ id: "", ...EMPTY });
+	const [form, setForm] = useState<DishPayload>(EMPTY);
 
 	useEffect(() => {
 		if (open) {
-			setForm(dish ? { ...dish } : { id: crypto.randomUUID(), ...EMPTY });
+			setForm(
+				dish
+					? {
+							name: dish.name,
+							category: dish.category,
+							price: dish.price,
+							description: dish.description,
+							image: dish.image,
+							available: dish.available,
+						}
+					: EMPTY,
+			);
 		}
 	}, [open, dish]);
 
 	if (!open) return null;
 
-	const update = <K extends keyof Dish>(key: K, value: Dish[K]) =>
+	const update = <K extends keyof DishPayload>(key: K, value: DishPayload[K]) =>
 		setForm((f) => ({ ...f, [key]: value }));
 
 	const submit = (e: React.FormEvent) => {

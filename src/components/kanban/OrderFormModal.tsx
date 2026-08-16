@@ -1,11 +1,11 @@
 import { Plus, Trash2, X } from "lucide-react";
 import { useState } from "react";
-import type { Order, OrderItem, OrderPriority } from "../../lib/mock-data";
+import type { NewOrderPayload, OrderPriority } from "../../lib/mock-data";
 
 interface OrderFormModalProps {
 	open: boolean;
 	onClose: () => void;
-	onSave: (order: Order) => void;
+	onSave: (order: NewOrderPayload) => void;
 }
 
 interface DraftItem {
@@ -47,14 +47,12 @@ export function OrderFormModal({ open, onClose, onSave }: OrderFormModalProps) {
 
 	const submit = (e: React.FormEvent) => {
 		e.preventDefault();
-		const cleanItems: OrderItem[] = items
+		const cleanItems = items
 			.filter((i) => i.name.trim())
-			.map((i) => ({ id: i.id, name: i.name.trim(), qty: i.qty }));
+			.map((i) => ({ name: i.name.trim(), qty: i.qty }));
 		const now = new Date();
-		const order: Order = {
-			id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+		const order: NewOrderPayload = {
 			table: table.trim() || "Mesa",
-			status: "pending",
 			priority,
 			items: cleanItems,
 			total,

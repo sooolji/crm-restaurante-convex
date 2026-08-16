@@ -1,29 +1,17 @@
 import { useState } from "react";
-import {
-	ORDER_STATUSES,
-	type Order,
-	type OrderStatus,
-} from "../../lib/mock-data";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import { ORDER_STATUSES, type OrderStatus } from "../../lib/mock-data";
 import { KanbanColumn } from "./KanbanColumn";
 
 interface KanbanBoardProps {
-	orders: Order[];
-	setOrders: React.Dispatch<React.SetStateAction<Order[]>>;
+	orders: Doc<"orders">[];
+	onMove: (orderId: Id<"orders">, status: OrderStatus) => void;
 }
 
-export function KanbanBoard({ orders, setOrders }: KanbanBoardProps) {
+export function KanbanBoard({ orders, onMove }: KanbanBoardProps) {
 	const [dragOver, setDragOver] = useState<OrderStatus | null>(null);
 
-	const setStatus = (orderId: string, status: OrderStatus) => {
-		setOrders((prev) =>
-			prev.map((o) => (o.id === orderId ? { ...o, status } : o)),
-		);
-	};
-
-	const onMove = (orderId: string, next: OrderStatus) =>
-		setStatus(orderId, next);
-
-	const onDragStart = (e: React.DragEvent, orderId: string) => {
+	const onDragStart = (e: React.DragEvent, orderId: Id<"orders">) => {
 		e.dataTransfer.setData("text/plain", orderId);
 		e.dataTransfer.effectAllowed = "move";
 	};
@@ -35,12 +23,10 @@ export function KanbanBoard({ orders, setOrders }: KanbanBoardProps) {
 
 	const onDrop = (e: React.DragEvent, status: OrderStatus) => {
 		e.preventDefault();
-		const orderId = e.dataTransfer.getData("text/plain");
-		setStatus(orderId, status);
+		const orderId = e.dataTransfer.getData("text/plain") as Id<"orders">;
+		onMove(orderId, status);
 		setDragOver(null);
 	};
-
-	const setDragOverColumn = (status: OrderStatus | null) => setDragOver(status);
 
 	return (
 		<div className="flex gap-4 pb-4">
@@ -55,8 +41,8 @@ export function KanbanBoard({ orders, setOrders }: KanbanBoardProps) {
 					onDrop={onDrop}
 					onDragOver={onDragOver}
 					isOver={dragOver === value}
-					onDragEnter={() => setDragOverColumn(value)}
-					onDragLeave={() => setDragOverColumn(null)}
+					onDragEnter={() => setDragOver(value)}
+					onDragLeave={() => setDragOver(null)}
 				/>
 			))}
 		</div>

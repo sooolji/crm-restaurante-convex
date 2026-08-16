@@ -1,41 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Plus, Search } from "lucide-react";
+import { useMutation, useQuery } from "convex/react";
+import { Loader2, Plus, Search } from "lucide-react";
 import { useState } from "react";
+import { api } from "../../convex/_generated/api";
+import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { DishCard } from "../components/dishes/DishCard";
 import { DishFormModal } from "../components/dishes/DishFormModal";
-import { DISH_CATEGORIES, type Dish, initialDishes } from "../lib/mock-data";
+import { DISH_CATEGORIES, type DishPayload } from "../lib/mock-data";
 
 export const Route = createFileRoute("/platos")({ component: Dishes });
 
 function Dishes() {
-	const [dishes, setDishes] = useState(initialDishes);
+	const dishes = useQuery(api.dishes.list);
+	const createDish = useMutation(api.dishes.create);
+	const updateDish = useMutation(api.dishes.update);
+	const toggleDish = useMutation(api.dishes.toggleAvailable);
+	const removeDish = useMutation(api.dishes.remove);
+
 	const [search, setSearch] = useState("");
 	const [category, setCategory] = useState("Todas");
 	const [modalOpen, setModalOpen] = useState(false);
-	const [editing, setEditing] = useState<Dish | null>(null);
-	const [toDelete, setToDelete] = useState<Dish | null>(null);
+	const [editing, setEditing] = useState<Doc<"dishes"> | null>(null);
+	const [toDelete, setToDelete] = useState<Doc<"dishes"> | null>(null);
 
-	const filtered = dishes.filter((d) => {
+	const data = dishes ?? [];
+
+	const filtered = data.filter((d) => {
 		const matchesSearch = d.name.toLowerCase().includes(search.toLowerCase());
 		const matchesCategory = category === "Todas" || d.category === category;
 		return matchesSearch && matchesCategory;
 	});
 
-	const saveDish = (dish: Dish) => {
-		setDishes((prev) => {
-			const exists = prev.some((d) => d.id === dish.id);
-			return exists
-				? prev.map((d) => (d.id === dish.id ? dish : d))
-				: [...prev, dish];
-		});
+	const saveDish = (payload: DishPayload) => {
+		if (editing) {
+			void updateDish({ id: editing._id, ...payload });
+		} else {
+			void createDish(payload);
+		}
 		setModalOpen(false);
 		setEditing(null);
-	};
-
-	const toggleAvailable = (id: string) => {
-		setDishes((prev) =>
-			prev.map((d) => (d.id === id ? { ...d, available: !d.available } : d)),
-		);
 	};
 
 	const openNew = () => {
@@ -43,7 +46,7 @@ function Dishes() {
 		setModalOpen(true);
 	};
 
-	const openEdit = (dish: Dish) => {
+	const openEdit = (dish: Doc<"dishes">) => {
 		setEditing(dish);
 		setModalOpen(true);
 	};
@@ -97,24 +100,35 @@ function Dishes() {
 				</div>
 			</div>
 
-			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-				{filtered.map((dish) => (
-					<DishCard
-						key={dish.id}
-						dish={dish}
-						onEdit={openEdit}
-						onDelete={(id) =>
-							setToDelete(dishes.find((d) => d.id === id) ?? null)
-						}
-						onToggleAvailable={toggleAvailable}
-					/>
-				))}
-			</div>
+			{dishes === undefined ? (
+				<div className="flex items-center gap-2 py-16 text-slate-500">
+					<Loader2 className="size-5 animate-spin" />
+					Cargando platos...
+				</div>
+			) : (
+				<>
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+						{filtered.map((dish) => (
+							<DishCard
+								key={dish._id}
+								dish={dish}
+								onEdit={openEdit}
+								onDelete={(id: Id<"dishes">) =>
+									setToDelete(data.find((d) => d._id === id) ?? null)
+								}
+								onToggleAvailable={(id: Id<"dishes">) =>
+									void toggleDish({ id })
+								}
+							/>
+						))}
+					</div>
 
-			{filtered.length === 0 && (
-				<p className="py-16 text-center text-sm text-slate-500">
-					No se encontraron platos con ese filtro.
-				</p>
+					{filtered.length === 0 && (
+						<p className="py-16 text-center text-sm text-slate-500">
+							No se encontraron platos con ese filtro.
+						</p>
+					)}
+				</>
 			)}
 
 			<DishFormModal
@@ -157,7 +171,7 @@ function Dishes() {
 							<button
 								type="button"
 								onClick={() => {
-									setDishes((prev) => prev.filter((d) => d.id !== toDelete.id));
+									void removeDish({ id: toDelete._id });
 									setToDelete(null);
 								}}
 								className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"

@@ -1,11 +1,11 @@
 import { Pencil, Trash2 } from "lucide-react";
-import type { Dish } from "../../lib/mock-data";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 
 interface DishCardProps {
-	dish: Dish;
-	onEdit: (dish: Dish) => void;
-	onDelete: (id: string) => void;
-	onToggleAvailable: (id: string) => void;
+	dish: Doc<"dishes">;
+	onEdit: (dish: Doc<"dishes">) => void;
+	onDelete: (id: Id<"dishes">) => void;
+	onToggleAvailable: (id: Id<"dishes">) => void;
 }
 
 export function DishCard({
@@ -44,7 +44,7 @@ export function DishCard({
 				<div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
 					<button
 						type="button"
-						onClick={() => onToggleAvailable(dish.id)}
+						onClick={() => onToggleAvailable(dish._id)}
 						className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
 							dish.available ? "bg-emerald-500" : "bg-slate-300"
 						}`}
@@ -67,7 +67,7 @@ export function DishCard({
 						</button>
 						<button
 							type="button"
-							onClick={() => onDelete(dish.id)}
+							onClick={() => onDelete(dish._id)}
 							className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
 							aria-label="Eliminar"
 						>

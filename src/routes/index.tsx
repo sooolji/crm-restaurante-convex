@@ -1,25 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMutation, useQuery } from "convex/react";
 import {
 	CheckCircle2,
 	ClipboardList,
 	DollarSign,
+	Loader2,
 	Plus,
 	Timer,
 } from "lucide-react";
 import { useState } from "react";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { KanbanBoard } from "../components/kanban/KanbanBoard";
 import { OrderFormModal } from "../components/kanban/OrderFormModal";
-import { initialOrders, type Order } from "../lib/mock-data";
+import type { NewOrderPayload, OrderStatus } from "../lib/mock-data";
 
 export const Route = createFileRoute("/")({ component: Dashboard });
 
 function Dashboard() {
-	const [orders, setOrders] = useState(initialOrders);
+	const orders = useQuery(api.orders.list);
+	const createOrder = useMutation(api.orders.create);
+	const updateStatus = useMutation(api.orders.updateStatus);
 	const [modalOpen, setModalOpen] = useState(false);
 
-	const active = orders.filter((o) => o.status !== "delivered");
+	const data = orders ?? [];
+
+	const active = data.filter((o) => o.status !== "delivered");
 	const pending = active.filter((o) => o.status === "pending");
-	const delivered = orders.filter((o) => o.status === "delivered");
+	const delivered = data.filter((o) => o.status === "delivered");
 	const total = delivered.reduce((sum, o) => sum + o.total, 0);
 
 	const stats = [
@@ -49,9 +57,12 @@ function Dashboard() {
 		},
 	];
 
-	const addOrder = (order: Order) => {
-		setOrders((prev) => [order, ...prev]);
-		setModalOpen(false);
+	const onMove = (orderId: Id<"orders">, status: OrderStatus) => {
+		void updateStatus({ id: orderId, status });
+	};
+
+	const onSaveOrder = (payload: NewOrderPayload) => {
+		void createOrder(payload).then(() => setModalOpen(false));
 	};
 
 	return (
@@ -94,12 +105,19 @@ function Dashboard() {
 				))}
 			</div>
 
-			<KanbanBoard orders={orders} setOrders={setOrders} />
+			{orders === undefined ? (
+				<div className="flex items-center gap-2 py-16 text-slate-500">
+					<Loader2 className="size-5 animate-spin" />
+					Cargando pedidos...
+				</div>
+			) : (
+				<KanbanBoard orders={data} onMove={onMove} />
+			)}
 
 			<OrderFormModal
 				open={modalOpen}
 				onClose={() => setModalOpen(false)}
-				onSave={addOrder}
+				onSave={onSaveOrder}
 			/>
 		</div>
 	);

@@ -1,4 +1,5 @@
-import type { Order, OrderStatus } from "../../lib/mock-data";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
+import type { OrderStatus } from "../../lib/mock-data";
 import { OrderCard } from "./OrderCard";
 
 const COLUMN_STYLES: Record<OrderStatus, string> = {
@@ -18,9 +19,9 @@ const DOT_COLORS: Record<OrderStatus, string> = {
 interface KanbanColumnProps {
 	status: OrderStatus;
 	label: string;
-	orders: Order[];
-	onMove: (orderId: string, next: OrderStatus) => void;
-	onDragStart: (e: React.DragEvent, orderId: string) => void;
+	orders: Doc<"orders">[];
+	onMove: (orderId: Id<"orders">, next: OrderStatus) => void;
+	onDragStart: (e: React.DragEvent, orderId: Id<"orders">) => void;
 	onDrop: (e: React.DragEvent, status: OrderStatus) => void;
 	onDragOver: (e: React.DragEvent) => void;
 	isOver: boolean;
@@ -69,7 +70,7 @@ export function KanbanColumn({
 				) : (
 					orders.map((order) => (
 						<OrderCard
-							key={order.id}
+							key={order._id}
 							order={order}
 							onMove={onMove}
 							onDragStart={onDragStart}
