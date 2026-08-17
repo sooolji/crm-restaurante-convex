@@ -29,7 +29,7 @@ export function KanbanBoard({ orders, onMove }: KanbanBoardProps) {
 	};
 
 	return (
-		<div className="flex gap-4 overflow-x-auto pb-4">
+		<div className="flex gap-4 overflow-x-auto pb-4 lg:h-full">
 			{ORDER_STATUSES.map(({ value, label }) => (
 				<KanbanColumn
 					key={value}

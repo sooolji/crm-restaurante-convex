@@ -1,5 +1,6 @@
+import { useAuthActions } from "@convex-dev/auth/react";
 import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, UtensilsCrossed, X } from "lucide-react";
+import { LayoutDashboard, LogOut, UtensilsCrossed, X } from "lucide-react";
 
 const NAV_ITEMS = [
 	{ to: "/", label: "Pedidos", icon: LayoutDashboard },
@@ -13,6 +14,7 @@ interface SidebarProps {
 
 export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
 	const { pathname } = useLocation();
+	const { signOut } = useAuthActions();
 
 	return (
 		<>
@@ -73,6 +75,17 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
 					<p className="text-sm font-semibold text-emerald-400">
 						12:00 – 23:00
 					</p>
+				</div>
+
+				<div className="border-t border-slate-800 px-3 py-3">
+					<button
+						type="button"
+						onClick={() => void signOut()}
+						className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/60 hover:text-white"
+					>
+						<LogOut className="size-4" />
+						Cerrar sesión
+					</button>
 				</div>
 			</aside>
 		</>

@@ -4,11 +4,18 @@ import { Loader2, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
+import { RequireAuth } from "../components/auth/RequireAuth";
 import { DishCard } from "../components/dishes/DishCard";
 import { DishFormModal } from "../components/dishes/DishFormModal";
 import { DISH_CATEGORIES, type DishPayload } from "../lib/mock-data";
 
-export const Route = createFileRoute("/platos")({ component: Dishes });
+export const Route = createFileRoute("/platos")({
+	component: () => (
+		<RequireAuth>
+			<Dishes />
+		</RequireAuth>
+	),
+});
 
 function Dishes() {
 	const dishes = useQuery(api.dishes.list);

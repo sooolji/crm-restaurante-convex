@@ -48,7 +48,7 @@ export function KanbanColumn({
 			onDragOver={onDragOver}
 			onDragEnter={onDragEnter}
 			onDragLeave={onDragLeave}
-			className={`flex min-h-[50vh] min-w-72 flex-1 flex-col rounded-2xl p-3 transition-colors sm:min-h-[65vh] lg:min-h-[70vh] ${COLUMN_STYLES[status]} ${
+			className={`flex min-h-[50vh] min-w-72 flex-1 flex-col rounded-2xl p-3 transition-colors sm:min-h-[65vh] lg:h-full lg:min-h-0 ${COLUMN_STYLES[status]} ${
 				isOver ? "ring-2 ring-indigo-400" : ""
 			}`}
 		>
@@ -62,7 +62,7 @@ export function KanbanColumn({
 				</span>
 			</div>
 
-			<div className="flex flex-1 flex-col gap-3 overflow-y-auto">
+			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
 				{orders.length === 0 ? (
 					<div className="flex flex-1 items-center justify-center rounded-xl border-2 border-dashed border-slate-300 p-6 text-center text-xs text-slate-500">
 						Arrastra un pedido aquí

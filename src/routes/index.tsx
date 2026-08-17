@@ -11,11 +11,18 @@ import {
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { RequireAuth } from "../components/auth/RequireAuth";
 import { KanbanBoard } from "../components/kanban/KanbanBoard";
 import { OrderFormModal } from "../components/kanban/OrderFormModal";
 import type { NewOrderPayload, OrderStatus } from "../lib/mock-data";
 
-export const Route = createFileRoute("/")({ component: Dashboard });
+export const Route = createFileRoute("/")({
+	component: () => (
+		<RequireAuth>
+			<Dashboard />
+		</RequireAuth>
+	),
+});
 
 function Dashboard() {
 	const orders = useQuery(api.orders.list);
@@ -66,8 +73,8 @@ function Dashboard() {
 	};
 
 	return (
-		<div className="p-6">
-			<header className="mb-6 flex flex-wrap items-center justify-between gap-4">
+		<div className="flex flex-col p-6 lg:h-[calc(100vh-3rem)]">
+			<header className="mb-6 flex shrink-0 flex-wrap items-center justify-between gap-4 lg:mb-4">
 				<div>
 					<h1 className="text-2xl font-bold text-slate-900">
 						Pedidos en tiempo real
@@ -86,19 +93,21 @@ function Dashboard() {
 				</button>
 			</header>
 
-			<div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+			<div className="mb-6 grid shrink-0 grid-cols-2 gap-4 lg:mb-4 lg:grid-cols-4">
 				{stats.map(({ label, value, icon: Icon, color }) => (
 					<div
 						key={label}
-						className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+						className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:gap-3 lg:p-3"
 					>
 						<div
-							className={`flex size-11 items-center justify-center rounded-xl ${color}`}
+							className={`flex size-11 items-center justify-center rounded-xl lg:size-9 ${color}`}
 						>
-							<Icon className="size-5" />
+							<Icon className="size-5 lg:size-4" />
 						</div>
 						<div>
-							<p className="text-xl font-bold text-slate-900">{value}</p>
+							<p className="text-xl font-bold text-slate-900 lg:text-lg">
+								{value}
+							</p>
 							<p className="text-xs text-slate-500">{label}</p>
 						</div>
 					</div>
@@ -111,7 +120,9 @@ function Dashboard() {
 					Cargando pedidos...
 				</div>
 			) : (
-				<KanbanBoard orders={data} onMove={onMove} />
+				<div className="lg:min-h-0 lg:flex-1">
+					<KanbanBoard orders={data} onMove={onMove} />
+				</div>
 			)}
 
 			<OrderFormModal
